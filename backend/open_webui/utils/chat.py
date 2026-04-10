@@ -49,6 +49,7 @@ from open_webui.utils.filter import (
     get_sorted_filter_ids,
     process_filter_functions,
 )
+from open_webui.utils.guardrails import check_message_guardrails
 
 from open_webui.env import GLOBAL_LOG_LEVEL, BYPASS_MODEL_ACCESS_CONTROL
 
@@ -270,6 +271,39 @@ async def generate_chat_completion(
                     ),
                     'selected_model_id': selected_model_id,
                 }
+
+        # ── NeMo Guardrails input check ─────────────────────────────────
+        # Skipped for internal/background calls (bypass_filter=True).
+        if not bypass_filter:
+            _blocked = await check_message_guardrails(form_data.get('messages', []))
+            if _blocked:
+                _chunk_id = f'chatcmpl-guardrails-{uuid.uuid4().hex[:8]}'
+                _model_id = form_data.get('model', '')
+                if form_data.get('stream'):
+                    async def _guardrails_stream():
+                        yield (
+                            f'data: {json.dumps({"id": _chunk_id, "object": "chat.completion.chunk", "model": _model_id, "choices": [{"index": 0, "delta": {"role": "assistant", "content": _blocked}, "finish_reason": None}]})}\n\n'
+                        )
+                        yield (
+                            f'data: {json.dumps({"id": _chunk_id, "object": "chat.completion.chunk", "model": _model_id, "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]})}\n\n'
+                        )
+                        yield 'data: [DONE]\n\n'
+                    return StreamingResponse(
+                        _guardrails_stream(),
+                        media_type='text/event-stream',
+                    )
+                else:
+                    return {
+                        'id': _chunk_id,
+                        'object': 'chat.completion',
+                        'model': _model_id,
+                        'choices': [{
+                            'index': 0,
+                            'message': {'role': 'assistant', 'content': _blocked},
+                            'finish_reason': 'stop',
+                        }],
+                    }
+        # ─────────────────────────────────────────────────────────────────
 
         if model.get('pipe'):
             # Below does not require bypass_filter because this is the only route the uses this function and it is already bypassing the filter

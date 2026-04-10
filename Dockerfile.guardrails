@@ -1,0 +1,11 @@
+FROM ghcr.io/open-webui/open-webui:main
+
+# Install NeMo Guardrails
+RUN pip install --no-cache-dir nemoguardrails
+
+# Copy guardrails policy files
+COPY backend/open_webui/nemo_guardrails/ /app/backend/open_webui/nemo_guardrails/
+
+# Copy patched backend files
+COPY backend/open_webui/utils/guardrails.py /app/backend/open_webui/utils/guardrails.py
+COPY backend/open_webui/utils/chat.py /app/backend/open_webui/utils/chat.py
