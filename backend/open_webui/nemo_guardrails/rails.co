@@ -387,7 +387,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # расскажи / раскажи (tell me) + prompt/instructions
   if "расскажи" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -412,7 +411,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # напиши (write) + prompt/instructions
   if "напиши" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -433,7 +431,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # выдай (give out / reveal) + prompt/instructions
   if "выдай" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -446,7 +443,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # скажи (say/tell) + prompt/instructions
   if "скажи" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -459,7 +455,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # открой (reveal/open) + prompt/instructions
   if "открой" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -472,7 +467,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # повтори (repeat) + prompt/instructions
   if "повтори" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -485,7 +479,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # выведи (output/print) + prompt/instructions
   if "выведи" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -498,7 +491,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # процитируй / цитируй (quote) + prompt/instructions
   if "процитируй" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -519,7 +511,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # напомни (remind) + prompt/instructions
   if "напомни" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -532,7 +523,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # дай (give) + prompt/instructions
   if "дай" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -545,7 +535,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # прочти / прочитай (read aloud) + prompt/instructions
   if "прочти" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -570,7 +559,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # расскрой дополнительные варианты
   if "расскрой" in $user_message and "инструк" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -591,7 +579,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # составные фразы — правила / настройки
   if "твои правила" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -648,7 +635,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не могу игнорировать правила или инструкции. Сформулируй вопрос без попыток обхода политики."
     stop
 
-  # опечатки в слове "промт"
   if "прмот" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -661,7 +647,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # опечатки в "системный"
   if "сисемный" in $user_message and "промт" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -694,7 +679,6 @@ define flow jailbreak_or_policy_bypass_check
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
 
-  # английские дополнения
   if "hidden prompt" in $user_message
     bot say "Я не раскрываю системные инструкции или скрытые настройки. Задай вопрос по теме без запроса внутренних промптов."
     stop
@@ -769,11 +753,241 @@ define flow jailbreak_or_policy_bypass_check
 
 
 define bot refuse to respond
-  "Это сообщение нарушает политику безопасности. Задай другой вопрос."
+  "Это сообщение нарушает политику безопасности. Задай другой вопрос. / This message violates our safety policy. Please ask something else."
 
 
 define flow self_check_input
   $allowed = execute self_check_input
   if not $allowed
     bot refuse to respond
+    stop
+
+
+define flow topic_control_check
+  if "как взорвать" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взовать" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взрывчатку" in $user_message and "сделать" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "взрывчатку" in $user_message and "купить" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "взрывчатку" in $user_message and "рецепт" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "динамит" in $user_message and "сделать" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "динамит" in $user_message and "взорвать" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "тротил" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "гексоген" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "нитроглицерин" in $user_message and "синтез" in $user_message
+    bot say "Запросы о незаконной деятельности или серьёзном вреде недопустимы. / Requests involving illegal activity or serious harm are not allowed."
+    stop
+
+  if "взорвать" in $user_message and "церковь" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взорвать" in $user_message and "мечеть" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взорвать" in $user_message and "школу" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взорвать" in $user_message and "метро" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взорвать" in $user_message and "здание" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "взорвать" in $user_message and "людей" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "теракт" in $user_message and "план" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "теракт" in $user_message and "как" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "пояс шахида" in $user_message
+    bot say "Запрос о взрывчатых веществах или терроризме недопустим. / Requests about explosives or terrorism are not allowed."
+    stop
+
+  if "зарин" in $user_message and "синтез" in $user_message
+    bot say "Запросы о химическом или биологическом оружии недопустимы. / Chemical or biological weapon requests are not allowed."
+    stop
+
+  if "новичок" in $user_message and "синтез" in $user_message
+    bot say "Запросы о химическом или биологическом оружии недопустимы. / Chemical or biological weapon requests are not allowed."
+    stop
+
+  if "химическое оружие" in $user_message
+    bot say "Запросы о химическом или биологическом оружии недопустимы. / Chemical or biological weapon requests are not allowed."
+    stop
+
+
+define flow pii_pattern_check
+  if "номер паспорта" in $user_message and "пробить" in $user_message
+    bot say "Запросы на сбор персональных данных без согласия недопустимы. / Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "номер паспорта" in $user_message and "найти" in $user_message
+    bot say "Запросы на сбор персональных данных без согласия недопустимы. / Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "деанон" in $user_message
+    bot say "Запросы на сбор персональных данных без согласия недопустимы. / Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "своттинг" in $user_message
+    bot say "Запросы на сбор персональных данных без согласия недопустимы. / Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "swatting" in $user_message
+    bot say "Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "пробить по базе" in $user_message
+    bot say "Запросы на сбор персональных данных без согласия недопустимы. / Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "найти адрес" in $user_message and "человека" in $user_message
+    bot say "Запросы на сбор персональных данных без согласия недопустимы. / Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "find someone" in $user_message and "address" in $user_message
+    bot say "Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "ssn lookup" in $user_message
+    bot say "Requests to collect personal data without consent are not allowed."
+    stop
+
+  if "track location" in $user_message and "without" in $user_message
+    bot say "Requests to collect personal data without consent are not allowed."
+    stop
+
+
+define flow output_content_safety_check
+  if "вот как сделать бомбу" in $bot_response
+    bot say "Ответ заблокирован политикой безопасности выходного контента. / Output blocked by content safety policy."
+    stop
+
+  if "вот рецепт взрывчатки" in $bot_response
+    bot say "Ответ заблокирован политикой безопасности выходного контента. / Output blocked by content safety policy."
+    stop
+
+  if "вот синтез метамфетамина" in $bot_response
+    bot say "Ответ заблокирован политикой безопасности выходного контента. / Output blocked by content safety policy."
+    stop
+
+  if "here is how to make a bomb" in $bot_response
+    bot say "Output blocked by content safety policy."
+    stop
+
+  if "here is the synthesis of" in $bot_response
+    bot say "Output blocked by content safety policy."
+    stop
+
+  if "step 1: acquire ammonium nitrate" in $bot_response
+    bot say "Output blocked by content safety policy."
+    stop
+
+  if "step 1: obtain pseudoephedrine" in $bot_response
+    bot say "Output blocked by content safety policy."
+    stop
+
+  if "to make tatp" in $bot_response
+    bot say "Output blocked by content safety policy."
+    stop
+
+  if "to synthesize sarin" in $bot_response
+    bot say "Output blocked by content safety policy."
+    stop
+
+  if "инструкция по изготовлению бомбы" in $bot_response
+    bot say "Ответ заблокирован политикой безопасности выходного контента. / Output blocked by content safety policy."
+    stop
+
+  if "для изготовления взрывчатки вам понадобится" in $bot_response
+    bot say "Ответ заблокирован политикой безопасности выходного контента. / Output blocked by content safety policy."
+    stop
+
+  if "для синтеза метамфетамина вам понадобится" in $bot_response
+    bot say "Ответ заблокирован политикой безопасности выходного контента. / Output blocked by content safety policy."
+    stop
+
+
+define flow output_pii_leak_check
+  if "ssn:" in $bot_response
+    bot say "Ответ заблокирован — обнаружена утечка персональных данных. / Output blocked — PII leak detected."
+    stop
+
+  if "social security number:" in $bot_response
+    bot say "Output blocked — PII leak detected."
+    stop
+
+  if "credit card number:" in $bot_response
+    bot say "Output blocked — PII leak detected."
+    stop
+
+  if "номер карты:" in $bot_response
+    bot say "Ответ заблокирован — обнаружена утечка персональных данных. / Output blocked — PII leak detected."
+    stop
+
+
+define flow output_injection_check
+  if ":(){ :|:& };:" in $bot_response
+    bot say "Ответ заблокирован — обнаружена инъекция кода. / Output blocked — code injection detected."
+    stop
+
+  if "rm -rf /" in $bot_response
+    bot say "Ответ заблокирован — обнаружена опасная команда. / Output blocked — dangerous shell command detected."
+    stop
+
+  if "dd if=/dev/zero" in $bot_response
+    bot say "Output blocked — dangerous shell command detected."
+    stop
+
+  if "<script>" in $bot_response
+    bot say "Output blocked — XSS injection detected."
+    stop
+
+  if "eval(base64_decode" in $bot_response
+    bot say "Output blocked — code injection detected."
+    stop
+
+  if "exec(compile" in $bot_response
+    bot say "Output blocked — code injection detected."
+    stop
+
+  if "__import__('os').system" in $bot_response
+    bot say "Output blocked — code injection detected."
     stop

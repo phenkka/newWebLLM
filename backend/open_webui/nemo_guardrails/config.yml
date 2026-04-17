@@ -9,3 +9,16 @@ rails:
   input:
     flows:
       - jailbreak_or_policy_bypass_check
+      - jailbreak_extra_keywords
+      - content_safety_keywords
+      - illegal_fraud_weapons_keywords
+      - pii_doxxing_secrets_keywords
+      - agentic_tool_abuse_keywords
+      - topic_control_check
+      - pii_pattern_check
+
+  output:
+    flows:
+      - output_content_safety_check
+      - output_pii_leak_check
+      - output_injection_check
