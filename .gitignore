@@ -18,7 +18,9 @@ __pycache__/
 CLAUDE.md
 # C extensions
 *.so
-
+.claude/
+defense/
+rag_security_analysis.md
 # Pyodide distribution
 static/pyodide/*
 !static/pyodide/pyodide-lock.json
