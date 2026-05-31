@@ -11,3 +11,9 @@ rails:
       - jailbreak_or_policy_bypass_check
       - jailbreak_extra_keywords
       - garak_prompt_extraction_and_hidden_rules
+      - content_safety_keywords
+      - illegal_fraud_weapons_keywords
+      - pii_doxxing_secrets_keywords
+      - agentic_tool_abuse_keywords
+      - topic_control_check
+      - pii_pattern_check
