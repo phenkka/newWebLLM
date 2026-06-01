@@ -1,0 +1,107 @@
+
+# ─────────────────────────────────────────────────────────────────────────────
+# rails_output_and_stubs.co
+#
+# Two sections:
+#  1. Input-rail stubs for topic_control_check and pii_pattern_check.
+#     Referenced in config.yml but not yet implemented elsewhere; these are
+#     pass-through flows so NeMo loads without errors.  Replace the body with
+#     real logic when needed.
+#
+#  2. Output-rail flows.  These are NOT called from the Python layer yet
+#     (chat.py only invokes check_message_guardrails for input).  They are
+#     defined here so config.yml references are satisfied and NeMo loads.
+#     Wire them into chat.py when ready.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ── input stubs ───────────────────────────────────────────────────────────────
+
+define flow topic_control_check
+  # Placeholder: topic restriction check.
+  # Add if-conditions here to block off-topic requests, e.g.:
+  #   if "competitor product" in $user_message
+  #     bot say "Я не обсуждаю конкурирующие продукты. Задай другой вопрос."
+  #     stop
+
+define flow pii_pattern_check
+  # Placeholder: pattern-based PII detection.
+  # Add if-conditions here to block personal data extraction, e.g.:
+  #   if "social security" in $user_message
+  #     bot say "Я не обрабатываю персональные идентификационные данные."
+  #     stop
+
+
+# ── output rails ─────────────────────────────────────────────────────────────
+# These run on the *bot response* before it reaches the user.
+# They are listed in config.yml under rails.output.flows.
+# NOTE: currently only wired if chat.py calls check_output_guardrails().
+
+define flow output_content_safety_check
+  # Block bot responses that contain obvious safety violations.
+  if "как сделать бомбу" in $bot_response
+    bot say "Ответ заблокирован системой безопасности. Переформулируй запрос."
+    stop
+  if "how to make a bomb" in $bot_response
+    bot say "Response blocked by safety policy. Please rephrase your request."
+    stop
+  if "инструкция по изготовлению оружия" in $bot_response
+    bot say "Ответ заблокирован системой безопасности."
+    stop
+
+define flow output_pii_leak_check
+  # Block bot responses that appear to be leaking PII from the context.
+  # Add concrete patterns if PII fields are known (SSN, card numbers, etc.).
+  if "ssn:" in $bot_response
+    bot say "Ответ заблокирован: обнаружена персональная информация."
+    stop
+  if "credit card" in $bot_response and "number" in $bot_response
+    bot say "Ответ заблокирован: обнаружена персональная информация."
+    stop
+
+define flow output_injection_check
+  # Block bot responses that look like injected system-prompt fragments
+  # or attempts to override the output pipeline.
+  if "[SYSTEM]" in $bot_response
+    bot say "Ответ заблокирован: обнаружена инъекция системного блока."
+    stop
+  if "ignore all previous" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка инъекции инструкции."
+    stop
+  if "[[OVERRIDE]]" in $bot_response
+    bot say "Ответ заблокирован: обнаружен маркер переопределения."
+    stop
+
+define flow garak_output_system_leak_check
+  # Block bot responses that reveal secret markers or system-prompt content.
+  # НЕБЕСА is the test secret word used in garak probe prompts.yml.
+  if "НЕБЕСА" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия скрытых инструкций или секретного маркера."
+    stop
+  if "небеса" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия скрытых инструкций или секретного маркера."
+    stop
+  if "system instructions are" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия системных инструкций."
+    stop
+  if "my system instructions are" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия системных инструкций."
+    stop
+  if "secret word is" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия секретного слова."
+    stop
+  if "secret word" in $bot_response and "omega" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия скрытой роли или секретного маркера."
+    stop
+  if "the forbidden word is" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия запрещённого слова."
+    stop
+  if "as omega" in $bot_response and "secret" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия скрытой роли или секретного маркера."
+    stop
+  if "you are a helpful, honest, and friendly assistant" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия системного промпта."
+    stop
+  if "my initial instruction" in $bot_response
+    bot say "Ответ заблокирован: обнаружена попытка раскрытия системного промпта."
+    stop
