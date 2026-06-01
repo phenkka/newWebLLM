@@ -17,3 +17,10 @@ rails:
       - agentic_tool_abuse_keywords
       - topic_control_check
       - pii_pattern_check
+
+  output:
+    flows:
+      - output_content_safety_check
+      - output_pii_leak_check
+      - output_injection_check
+      - garak_output_system_leak_check
