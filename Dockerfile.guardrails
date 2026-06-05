@@ -1,7 +1,7 @@
 FROM ghcr.io/open-webui/open-webui:main
 
-# Install NeMo Guardrails
-RUN pip install --no-cache-dir nemoguardrails
+# Guardrails run in-process (utils/guardrails.py executes the .co files
+# directly), so no extra packages are needed.
 
 # Copy guardrails policy files
 COPY backend/open_webui/nemo_guardrails/ /app/backend/open_webui/nemo_guardrails/

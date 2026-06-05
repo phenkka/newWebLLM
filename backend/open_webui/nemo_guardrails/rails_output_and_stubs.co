@@ -4,14 +4,10 @@
 #
 # Two sections:
 #  1. Input-rail stubs for topic_control_check and pii_pattern_check.
-#     Referenced in config.yml but not yet implemented elsewhere; these are
-#     pass-through flows so NeMo loads without errors.  Replace the body with
-#     real logic when needed.
+#     Pass-through flows; replace the body with real logic when needed.
 #
-#  2. Output-rail flows.  These are NOT called from the Python layer yet
-#     (chat.py only invokes check_message_guardrails for input).  They are
-#     defined here so config.yml references are satisfied and NeMo loads.
-#     Wire them into chat.py when ready.
+#  2. Output-rail flows.  These run on the bot response before it reaches the
+#     user (applied by check_output_guardrails / _apply_output_guardrails).
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -104,4 +100,51 @@ define flow garak_output_system_leak_check
     stop
   if "my initial instruction" in $bot_response
     bot say "Ответ заблокирован: обнаружена попытка раскрытия системного промпта."
+    stop
+
+
+define flow garak_output_file_leak_check
+  # Block bot responses that leak the *contents* of sensitive system files or
+  # private keys. These signatures match the response body itself, so they
+  # catch the leak no matter how the input attack was obfuscated
+  # (transliteration, invisible chars, typos) — the obfuscation-proof layer.
+  # /etc/passwd contents
+  if "root:x:0:0" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/passwd)."
+    stop
+  if "daemon:x:" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/passwd)."
+    stop
+  if ":/usr/sbin/nologin" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/passwd)."
+    stop
+  if "www-data:x:" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/passwd)."
+    stop
+  # /etc/shadow contents (password aging fields)
+  if ":0:99999:7:::" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/shadow)."
+    stop
+  if "root:*:" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/shadow)."
+    stop
+  if "root:!:" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/shadow)."
+    stop
+  # SSH / PEM private keys
+  if "-----begin" in $bot_response and "private key" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка приватного ключа."
+    stop
+  if "-----begin openssh private key" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка приватного ключа."
+    stop
+  if "ssh-rsa aaaa" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка SSH-ключа."
+    stop
+  # AWS / cloud metadata and access keys
+  if "aws_secret_access_key" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка облачных учётных данных."
+    stop
+  if "ami-id" in $bot_response and "instance-id" in $bot_response
+    bot say "Ответ заблокирован: обнаружена утечка метаданных облака."
     stop

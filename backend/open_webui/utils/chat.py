@@ -49,7 +49,10 @@ from open_webui.utils.filter import (
     get_sorted_filter_ids,
     process_filter_functions,
 )
-from open_webui.utils.guardrails import check_message_guardrails
+from open_webui.utils.guardrails import (
+    check_message_guardrails,
+    check_output_guardrails,
+)
 
 from open_webui.env import GLOBAL_LOG_LEVEL, BYPASS_MODEL_ACCESS_CONTROL
 
@@ -57,37 +60,80 @@ logging.basicConfig(stream=sys.stdout, level=GLOBAL_LOG_LEVEL)
 log = logging.getLogger(__name__)
 
 
-def guardrails_blocked_response(form_data: dict, blocked: str):
-    """OpenAI-shaped response when NeMo / keyword input rails block the user message."""
-    _chunk_id = f'chatcmpl-guardrails-{uuid.uuid4().hex[:8]}'
-    _model_id = form_data.get('model', '')
-    if form_data.get('stream'):
+def _content_from_openai_sse(chunk) -> str:
+    if isinstance(chunk, bytes):
+        try:
+            chunk = chunk.decode('utf-8')
+        except Exception:
+            return ''
+    if not isinstance(chunk, str):
+        return ''
+    out = []
+    for line in chunk.splitlines():
+        line = line.strip()
+        if not line.startswith('data:'):
+            continue
+        data = line[len('data:'):].strip()
+        if not data or data == '[DONE]':
+            continue
+        try:
+            obj = json.loads(data)
+        except Exception:
+            continue
+        for ch in obj.get('choices', []) or []:
+            delta = ch.get('delta') or {}
+            if isinstance(delta.get('content'), str):
+                out.append(delta['content'])
+            message = ch.get('message') or {}
+            if isinstance(message.get('content'), str):
+                out.append(message['content'])
+    return ''.join(out)
 
-        async def _guardrails_stream():
-            yield (
-                f'data: {json.dumps({"id": _chunk_id, "object": "chat.completion.chunk", "model": _model_id, "choices": [{"index": 0, "delta": {"role": "assistant", "content": blocked}, "finish_reason": None}]})}\n\n'
-            )
-            yield (
-                f'data: {json.dumps({"id": _chunk_id, "object": "chat.completion.chunk", "model": _model_id, "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]})}\n\n'
-            )
-            yield 'data: [DONE]\n\n'
+
+async def _apply_output_guardrails(response):
+    if isinstance(response, dict):
+        try:
+            content = response['choices'][0]['message']['content']
+        except (KeyError, IndexError, TypeError):
+            return response
+        if isinstance(content, str):
+            blocked = await check_output_guardrails(content)
+            if blocked:
+                response['choices'][0]['message']['content'] = blocked
+        return response
+
+    if isinstance(response, StreamingResponse):
+        source = response.body_iterator
+        background = response.background
+        media_type = response.media_type or 'text/event-stream'
+
+        async def _guarded_stream():
+            buffered = []
+            text_parts = []
+            async for chunk in source:
+                buffered.append(chunk)
+                text_parts.append(_content_from_openai_sse(chunk))
+            blocked = await check_output_guardrails(''.join(text_parts))
+            if blocked:
+                cid = f'chatcmpl-guardrails-{uuid.uuid4().hex[:8]}'
+                yield (
+                    f'data: {json.dumps({"id": cid, "object": "chat.completion.chunk", "choices": [{"index": 0, "delta": {"role": "assistant", "content": blocked}, "finish_reason": None}]})}\n\n'
+                )
+                yield (
+                    f'data: {json.dumps({"id": cid, "object": "chat.completion.chunk", "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]})}\n\n'
+                )
+                yield 'data: [DONE]\n\n'
+            else:
+                for chunk in buffered:
+                    yield chunk
 
         return StreamingResponse(
-            _guardrails_stream(),
-            media_type='text/event-stream',
+            _guarded_stream(),
+            media_type=media_type,
+            background=background,
         )
-    return {
-        'id': _chunk_id,
-        'object': 'chat.completion',
-        'model': _model_id,
-        'choices': [
-            {
-                'index': 0,
-                'message': {'role': 'assistant', 'content': blocked},
-                'finish_reason': 'stop',
-            }
-        ],
-    }
+
+    return response
 
 
 # When the question has been asked, let silence not be the
@@ -227,13 +273,6 @@ async def generate_chat_completion(
 
     model = models[model_id]
 
-    # Input rails for every path (ollama, openai, arena parent, pipes) except
-    # internal recursion (bypass_filter=True) and BYPASS_MODEL_ACCESS_CONTROL.
-    if not bypass_filter:
-        _blocked = await check_message_guardrails(form_data.get('messages', []))
-        if _blocked:
-            return guardrails_blocked_response(form_data, _blocked)
-
     if getattr(request.state, 'direct', False):
         return await generate_direct_chat_completion(request, form_data, user=user, models=models)
     else:
@@ -312,34 +351,73 @@ async def generate_chat_completion(
                     'selected_model_id': selected_model_id,
                 }
 
+        # ── Guardrails input check ──────────────────────────────────────
+        # Skipped for internal/background calls (bypass_filter=True).
+        if not bypass_filter:
+            _blocked = await check_message_guardrails(form_data.get('messages', []))
+            if _blocked:
+                _chunk_id = f'chatcmpl-guardrails-{uuid.uuid4().hex[:8]}'
+                _model_id = form_data.get('model', '')
+                if form_data.get('stream'):
+                    async def _guardrails_stream():
+                        yield (
+                            f'data: {json.dumps({"id": _chunk_id, "object": "chat.completion.chunk", "model": _model_id, "choices": [{"index": 0, "delta": {"role": "assistant", "content": _blocked}, "finish_reason": None}]})}\n\n'
+                        )
+                        yield (
+                            f'data: {json.dumps({"id": _chunk_id, "object": "chat.completion.chunk", "model": _model_id, "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]})}\n\n'
+                        )
+                        yield 'data: [DONE]\n\n'
+                    return StreamingResponse(
+                        _guardrails_stream(),
+                        media_type='text/event-stream',
+                    )
+                else:
+                    return {
+                        'id': _chunk_id,
+                        'object': 'chat.completion',
+                        'model': _model_id,
+                        'choices': [{
+                            'index': 0,
+                            'message': {'role': 'assistant', 'content': _blocked},
+                            'finish_reason': 'stop',
+                        }],
+                    }
+        # ─────────────────────────────────────────────────────────────────
+
         if model.get('pipe'):
             # Below does not require bypass_filter because this is the only route the uses this function and it is already bypassing the filter
-            return await generate_function_chat_completion(request, form_data, user=user, models=models)
-        if model.get('owned_by') == 'ollama':
+            _response = await generate_function_chat_completion(request, form_data, user=user, models=models)
+        elif model.get('owned_by') == 'ollama':
             # Using /ollama/api/chat endpoint
             form_data = convert_payload_openai_to_ollama(form_data)
-            response = await generate_ollama_chat_completion(
+            ollama_response = await generate_ollama_chat_completion(
                 request=request,
                 form_data=form_data,
                 user=user,
                 bypass_system_prompt=bypass_system_prompt,
             )
             if form_data.get('stream'):
-                response.headers['content-type'] = 'text/event-stream'
-                return StreamingResponse(
-                    convert_streaming_response_ollama_to_openai(response),
-                    headers=dict(response.headers),
-                    background=response.background,
+                ollama_response.headers['content-type'] = 'text/event-stream'
+                _response = StreamingResponse(
+                    convert_streaming_response_ollama_to_openai(ollama_response),
+                    headers=dict(ollama_response.headers),
+                    background=ollama_response.background,
                 )
             else:
-                return convert_response_ollama_to_openai(response)
+                _response = convert_response_ollama_to_openai(ollama_response)
         else:
-            return await generate_openai_chat_completion(
+            _response = await generate_openai_chat_completion(
                 request=request,
                 form_data=form_data,
                 user=user,
                 bypass_system_prompt=bypass_system_prompt,
             )
+
+        # ── Guardrails output check (.co $bot_response rails) ─────────────
+        # Skipped for internal/background calls (bypass_filter=True).
+        if not bypass_filter:
+            _response = await _apply_output_guardrails(_response)
+        return _response
 
 
 chat_completion = generate_chat_completion

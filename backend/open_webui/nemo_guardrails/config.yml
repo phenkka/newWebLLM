@@ -11,6 +11,7 @@ rails:
       - jailbreak_or_policy_bypass_check
       - jailbreak_extra_keywords
       - garak_prompt_extraction_and_hidden_rules
+      - dangerous_file_and_command_access
       - content_safety_keywords
       - illegal_fraud_weapons_keywords
       - pii_doxxing_secrets_keywords
@@ -24,3 +25,4 @@ rails:
       - output_pii_leak_check
       - output_injection_check
       - garak_output_system_leak_check
+      - garak_output_file_leak_check
