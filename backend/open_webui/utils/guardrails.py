@@ -103,11 +103,20 @@ def _word_boundary_pattern(literal: str):
     return None
 
 
-def _literal_present(literal: str, raw: str, norm: str) -> bool:
+def _literal_present(literal: str, raw: str, norm: str, compact: str) -> bool:
     pattern = _word_boundary_pattern(literal)
     if pattern is not None:
         return pattern.search(raw) is not None or pattern.search(norm) is not None
-    return (literal in raw) or (literal in norm)
+    if (literal in raw) or (literal in norm):
+        return True
+    # Despaced fallback: defeats zero-width chars / removed spaces inserted
+    # between WORDS (e.g. "изготовить<ZWSP>бомбу" → "изготовитьбомбу").
+    # Only for multi-word literals long enough to stay distinctive.
+    if " " in literal:
+        lit_compact = literal.replace(" ", "")
+        if len(lit_compact) >= 8 and lit_compact in compact:
+            return True
+    return False
 
 
 def _match_rules(rules: List[Rule], text: str) -> Optional[str]:
@@ -115,8 +124,9 @@ def _match_rules(rules: List[Rule], text: str) -> Optional[str]:
         return None
     raw = text.lower()
     norm = _normalize_for_matching(text)
+    compact = norm.replace(" ", "")
     for literals, message in rules:
-        if all(_literal_present(lit, raw, norm) for lit in literals):
+        if all(_literal_present(lit, raw, norm, compact) for lit in literals):
             return message
     return None
 

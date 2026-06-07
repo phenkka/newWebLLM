@@ -3054,6 +3054,48 @@ define flow illegal_fraud_weapons_keywords
   if "как сделать бомбу" in $user_message
     bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
     stop
+  if "как изготовить бомбу" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "изготовление бомбы" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "инструкция по изготовлению бомбы" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "инструкция по изготовлению взрывчатки" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "инструкция по изготовлению оружия" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "как создать бомбу" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "как собрать бомбу" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "сборка бомбы" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "взрывное устройство" in $user_message and "сделать" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "взрывное устройство" in $user_message and "изготовить" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "взрывное устройство" in $user_message and "собрать" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "how to make a bomb" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "how to build a bomb" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "how to manufacture a bomb" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
   if "как сделать взрывчатку" in $user_message
     bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
     stop

@@ -38,10 +38,22 @@ define flow output_content_safety_check
   if "как сделать бомбу" in $bot_response
     bot say "Ответ заблокирован системой безопасности. Переформулируй запрос."
     stop
+  if "как изготовить бомбу" in $bot_response
+    bot say "Ответ заблокирован системой безопасности."
+    stop
+  if "изготовление бомбы" in $bot_response
+    bot say "Ответ заблокирован системой безопасности."
+    stop
   if "how to make a bomb" in $bot_response
     bot say "Response blocked by safety policy. Please rephrase your request."
     stop
+  if "how to build a bomb" in $bot_response
+    bot say "Response blocked by safety policy. Please rephrase your request."
+    stop
   if "инструкция по изготовлению оружия" in $bot_response
+    bot say "Ответ заблокирован системой безопасности."
+    stop
+  if "инструкция по изготовлению бомбы" in $bot_response
     bot say "Ответ заблокирован системой безопасности."
     stop
 

@@ -1,0 +1,290 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# rails_output_safety.co
+#
+# Output rails mirroring the input safety catalog. These fire on $bot_response
+# and block the answer if the model actually PRODUCED forbidden content. To
+# avoid blocking refusals and educational discussion, rules match operational /
+# instructional signatures (ingredients, precursors, code, data leaks), not bare
+# topic words — i.e. what compliance looks like, not what the topic is.
+#
+# Executed in-process by utils/guardrails.py (reads all *.co). Case-insensitive.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ── Secrets / API keys / credentials leaked in the answer ────────────────────
+define flow output_secret_credential_leak
+  if "-----begin rsa private key" in $bot_response
+    bot say "Ответ заблокирован: утечка приватного ключа. / Response blocked: private key leak."
+    stop
+  if "-----begin openssh private key" in $bot_response
+    bot say "Ответ заблокирован: утечка приватного ключа. / Response blocked: private key leak."
+    stop
+  if "-----begin pgp private key" in $bot_response
+    bot say "Ответ заблокирован: утечка приватного ключа. / Response blocked: private key leak."
+    stop
+  if "-----begin" in $bot_response and "private key" in $bot_response
+    bot say "Ответ заблокирован: утечка приватного ключа. / Response blocked: private key leak."
+    stop
+  if "aws_secret_access_key" in $bot_response
+    bot say "Ответ заблокирован: утечка облачных учётных данных. / Response blocked: cloud credential leak."
+    stop
+  if "aws_access_key_id" in $bot_response
+    bot say "Ответ заблокирован: утечка облачных учётных данных. / Response blocked: cloud credential leak."
+    stop
+  if "secret_access_key" in $bot_response
+    bot say "Ответ заблокирован: утечка учётных данных. / Response blocked: credential leak."
+    stop
+  if "client_secret" in $bot_response
+    bot say "Ответ заблокирован: утечка учётных данных. / Response blocked: credential leak."
+    stop
+  if "ghp_" in $bot_response
+    bot say "Ответ заблокирован: утечка токена доступа. / Response blocked: access token leak."
+    stop
+  if "github_pat_" in $bot_response
+    bot say "Ответ заблокирован: утечка токена доступа. / Response blocked: access token leak."
+    stop
+  if "xoxb-" in $bot_response
+    bot say "Ответ заблокирован: утечка токена доступа. / Response blocked: access token leak."
+    stop
+  if "aizasy" in $bot_response
+    bot say "Ответ заблокирован: утечка API-ключа. / Response blocked: API key leak."
+    stop
+  if "your password is" in $bot_response
+    bot say "Ответ заблокирован: раскрытие пароля. / Response blocked: password disclosure."
+    stop
+  if "ваш пароль:" in $bot_response
+    bot say "Ответ заблокирован: раскрытие пароля. / Response blocked: password disclosure."
+    stop
+  if "пароль от" in $bot_response and "root" in $bot_response
+    bot say "Ответ заблокирован: раскрытие пароля. / Response blocked: password disclosure."
+    stop
+
+
+# ── PII / financial data leaked in the answer ────────────────────────────────
+define flow output_pii_financial_leak
+  if "ssn:" in $bot_response
+    bot say "Ответ заблокирован: обнаружена персональная информация. / Response blocked: PII detected."
+    stop
+  if "social security number" in $bot_response and "is" in $bot_response
+    bot say "Ответ заблокирован: обнаружена персональная информация. / Response blocked: PII detected."
+    stop
+  if "credit card" in $bot_response and "number" in $bot_response
+    bot say "Ответ заблокирован: обнаружены платёжные данные. / Response blocked: payment data detected."
+    stop
+  if "card number" in $bot_response and "expir" in $bot_response
+    bot say "Ответ заблокирован: обнаружены платёжные данные. / Response blocked: payment data detected."
+    stop
+  if "cvv:" in $bot_response
+    bot say "Ответ заблокирован: обнаружены платёжные данные. / Response blocked: payment data detected."
+    stop
+  if "номер карты" in $bot_response and "срок действия" in $bot_response
+    bot say "Ответ заблокирован: обнаружены платёжные данные. / Response blocked: payment data detected."
+    stop
+  if "track 2 data" in $bot_response
+    bot say "Ответ заблокирован: обнаружены данные банковской карты. / Response blocked: card track data."
+    stop
+  if "passport number" in $bot_response and "is" in $bot_response
+    bot say "Ответ заблокирован: обнаружена персональная информация. / Response blocked: PII detected."
+    stop
+
+
+# ── Explosives / weapons / improvised ordnance instructions ──────────────────
+define flow output_explosives_weapons_content
+  if "ammonium nitrate" in $bot_response and "fuel oil" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "нитрат аммония" in $bot_response and "топлив" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "acetone peroxide" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "перекись ацетона" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "потассиум" in $bot_response and "нитрат" in $bot_response and "уголь" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "селитра" in $bot_response and "сера" in $bot_response and "уголь" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "black powder" in $bot_response and "ratio" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "pipe bomb" in $bot_response and "pack" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "детонатор" in $bot_response and "заряд" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "взрыватель" in $bot_response and "взрывчат" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "напалм" in $bot_response and "смешать" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "thermite" in $bot_response and "iron oxide" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "термит" in $bot_response and "оксид железа" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+
+
+# ── Drug synthesis / manufacturing ───────────────────────────────────────────
+define flow output_drug_synthesis_content
+  if "methamphetamine" in $bot_response and "synthesis" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "метамфетамин" in $bot_response and "синтез" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "метамфетамин" in $bot_response and "получ" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "pseudoephedrine" in $bot_response and "reduction" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "псевдоэфедрин" in $bot_response and "восстанов" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "mdma" in $bot_response and "synthesis" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "fentanyl" in $bot_response and "synthesis" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "фентанил" in $bot_response and "синтез" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "synthesis" in $bot_response and "precursor" in $bot_response and "narcotic" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+
+
+# ── CBRN: chemical / biological / radiological agents ────────────────────────
+define flow output_cbrn_content
+  if "ricin" in $bot_response and "castor" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "рицин" in $bot_response and "касторов" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "sarin" in $bot_response and "synthesis" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "зарин" in $bot_response and "синтез" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "nerve agent" in $bot_response and "synthes" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "anthrax" in $bot_response and "weaponize" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "anthrax" in $bot_response and "spores" in $bot_response and "culture" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "сибирская язва" in $bot_response and "споры" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "chlorine gas" in $bot_response and "mix" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+  if "хлор" in $bot_response and "газ" in $bot_response and "смешать" in $bot_response
+    bot say "Ответ заблокирован: инструкции по созданию опасных агентов недопустимы. / Response blocked: hazardous agent instructions."
+    stop
+
+
+# ── Malware / exploit / hacking code in the answer ───────────────────────────
+define flow output_malware_exploit_content
+  if "bash -i >& /dev/tcp" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "/dev/tcp/" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "nc -e /bin/sh" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "ncat -e" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "msfvenom" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "meterpreter" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "sekurlsa::logonpasswords" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "invoke-mimikatz" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "powershell -enc" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "powershell -encodedcommand" in $bot_response
+    bot say "Ответ заблокирован: вредоносный код / эксплойт. / Response blocked: malicious code/exploit."
+    stop
+  if "rm -rf --no-preserve-root" in $bot_response
+    bot say "Ответ заблокирован: разрушительная команда. / Response blocked: destructive command."
+    stop
+  if "' or '1'='1" in $bot_response
+    bot say "Ответ заблокирован: эксплойт SQL-инъекции. / Response blocked: SQL injection exploit."
+    stop
+  if "union select" in $bot_response and "from" in $bot_response and "--" in $bot_response
+    bot say "Ответ заблокирован: эксплойт SQL-инъекции. / Response blocked: SQL injection exploit."
+    stop
+  if "getasynckeystate" in $bot_response
+    bot say "Ответ заблокирован: код кейлоггера/вредоносного ПО. / Response blocked: keylogger/malware code."
+    stop
+  if "import socket" in $bot_response and "subprocess" in $bot_response and "/bin/sh" in $bot_response
+    bot say "Ответ заблокирован: реверс-шелл / вредоносный код. / Response blocked: reverse shell/malicious code."
+    stop
+  if "зашифровать все файлы" in $bot_response and "выкуп" in $bot_response
+    bot say "Ответ заблокирован: код вымогателя. / Response blocked: ransomware code."
+    stop
+  if "encrypt all files" in $bot_response and "ransom" in $bot_response
+    bot say "Ответ заблокирован: код вымогателя. / Response blocked: ransomware code."
+    stop
+
+
+# ── Fraud / carding / forged documents ───────────────────────────────────────
+define flow output_fraud_content
+  if "carding" in $bot_response and "cvv" in $bot_response
+    bot say "Ответ заблокирован: мошенничество с платёжными данными. / Response blocked: payment fraud."
+    stop
+  if "stolen credit card" in $bot_response and "how to use" in $bot_response
+    bot say "Ответ заблокирован: мошенничество с платёжными данными. / Response blocked: payment fraud."
+    stop
+  if "поддельный паспорт" in $bot_response and "сделать" in $bot_response
+    bot say "Ответ заблокирован: изготовление поддельных документов. / Response blocked: forged document instructions."
+    stop
+  if "fake passport" in $bot_response and "template" in $bot_response
+    bot say "Ответ заблокирован: изготовление поддельных документов. / Response blocked: forged document instructions."
+    stop
+
+
+# ── Self-harm / suicide methods (with crisis redirect) ───────────────────────
+define flow output_self_harm_content
+  if "lethal dose" in $bot_response and "to die" in $bot_response
+    bot say "Я не даю инструкций по самоповреждению. Если тебе тяжело — обратись в кризисную службу или к врачу. / I can't provide self-harm instructions. If you're struggling, please contact a crisis line or a doctor."
+    stop
+  if "смертельная доза" in $bot_response and "чтобы умереть" in $bot_response
+    bot say "Я не даю инструкций по самоповреждению. Если тебе тяжело — обратись в кризисную службу или к врачу. / I can't provide self-harm instructions. If you're struggling, please contact a crisis line or a doctor."
+    stop
+  if "how to hang yourself" in $bot_response
+    bot say "Я не даю инструкций по самоповреждению. Если тебе тяжело — обратись в кризисную службу или к врачу. / I can't provide self-harm instructions. If you're struggling, please contact a crisis line or a doctor."
+    stop
+
+
+# ── CSAM / sexual content involving minors ───────────────────────────────────
+define flow output_csam_block
+  if "child" in $bot_response and "sexual" in $bot_response and "explicit" in $bot_response
+    bot say "Ответ заблокирован: недопустимый и незаконный контент. / Response blocked: illegal content."
+    stop
+  if "несовершеннолет" in $bot_response and "сексуальн" in $bot_response and "откровенн" in $bot_response
+    bot say "Ответ заблокирован: недопустимый и незаконный контент. / Response blocked: illegal content."
+    stop
