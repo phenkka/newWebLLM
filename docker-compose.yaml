@@ -12,6 +12,9 @@ services:
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL-http://10.8.1.1:11434}
       - NEMO_GUARDRAILS_OLLAMA_URL=${NEMO_GUARDRAILS_OLLAMA_URL-http://10.8.1.1:11434}
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY-}
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY-}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY-}
+      - LANGFUSE_HOST=${LANGFUSE_HOST-https://cloud.langfuse.com}
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
