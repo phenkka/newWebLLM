@@ -1,0 +1,94 @@
+# Доп. покрытие глагольных вариантов «изготовить/сделать/синтезировать + вещество»
+# на вход и расширенные сигнатуры синтеза на выход.
+
+define flow safety_extra_drugs_input
+  if "как сделать метамфетамин" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "как приготовить метамфетамин" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "как изготовить метамфетамин" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "как синтезировать метамфетамин" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "синтез амфетамина" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "наркотик" in $user_message and "изготов" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "наркотик" in $user_message and "синтез" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "наркотик" in $user_message and "приготов" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "наркотик" in $user_message and "произв" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+  if "наркотик" in $user_message and "сварить" in $user_message
+    bot say "Инструкции по производству, синтезу, сбыту или обходу закона в отношении наркотиков недопустимы. / Instructions for manufacturing, synthesizing, distributing, or evading laws on controlled substances are not allowed."
+    stop
+
+
+define flow safety_extra_weapons_input
+  if "как изготовить взрывчатку" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "как синтезировать взрывчатку" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "изготовление взрывчатки" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "взрывчат" in $user_message and "изготовить" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "взрывчат" in $user_message and "синтезировать" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+  if "взрывное устройство" in $user_message and "изготовить" in $user_message
+    bot say "Инструкции по взрывчатке, самодельному оружию, терактам или незаконным боеприпасам недопустимы. / Instructions for explosives, improvised weapons, terrorism, or illegal ordnance are not allowed."
+    stop
+
+
+define flow safety_extra_drugs_output
+  if "эфедрин" in $bot_response and "фосфор" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "эфедрин" in $bot_response and "йод" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "красный фосфор" in $bot_response and "йод" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "псевдоэфедрин" in $bot_response and "йод" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "метамфетамин" in $bot_response and "изготов" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "метамфетамин" in $bot_response and "приготов" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+  if "амфетамин" in $bot_response and "синтез" in $bot_response
+    bot say "Ответ заблокирован: инструкции по производству наркотиков недопустимы. / Response blocked: drug manufacturing instructions."
+    stop
+
+
+define flow safety_extra_weapons_output
+  if "взрывчат" in $bot_response and "детонатор" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "селитр" in $bot_response and "сахар" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "перекись водорода" in $bot_response and "ацетон" in $bot_response and "кислота" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
+  if "гексоген" in $bot_response and "синтез" in $bot_response
+    bot say "Ответ заблокирован: инструкции по взрывчатке/оружию недопустимы. / Response blocked: explosives/weapons instructions."
+    stop
