@@ -249,6 +249,7 @@ async def generate_chat_completion(
     # Propagate bypass_filter via request.state so that downstream route
     # handlers (openai/ollama) can read it without exposing it as a query param.
     request.state.bypass_filter = bypass_filter
+    request.state.bypass_system_prompt = bypass_system_prompt
 
     if hasattr(request.state, 'metadata'):
         if 'metadata' not in form_data:
@@ -394,7 +395,6 @@ async def generate_chat_completion(
                 request=request,
                 form_data=form_data,
                 user=user,
-                bypass_system_prompt=bypass_system_prompt,
             )
             if form_data.get('stream'):
                 ollama_response.headers['content-type'] = 'text/event-stream'
@@ -410,7 +410,6 @@ async def generate_chat_completion(
                 request=request,
                 form_data=form_data,
                 user=user,
-                bypass_system_prompt=bypass_system_prompt,
             )
 
         # ── Guardrails output check (.co $bot_response rails) ─────────────
