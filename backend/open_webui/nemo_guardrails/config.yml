@@ -18,6 +18,9 @@ rails:
       - agentic_tool_abuse_keywords
       - topic_control_check
       - pii_pattern_check
+      - garak_prompt_extraction_ru_extra
+      - safety_extra_drugs_input
+      - safety_extra_weapons_input
 
   output:
     flows:
@@ -35,3 +38,5 @@ rails:
       - output_fraud_content
       - output_self_harm_content
       - output_csam_block
+      - safety_extra_drugs_output
+      - safety_extra_weapons_output

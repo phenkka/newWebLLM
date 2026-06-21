@@ -1,40 +1,11 @@
-
-# ─────────────────────────────────────────────────────────────────────────────
-# rails_output_and_stubs.co
-#
-# Two sections:
-#  1. Input-rail stubs for topic_control_check and pii_pattern_check.
-#     Pass-through flows; replace the body with real logic when needed.
-#
-#  2. Output-rail flows.  These run on the bot response before it reaches the
-#     user (applied by check_output_guardrails / _apply_output_guardrails).
-# ─────────────────────────────────────────────────────────────────────────────
-
-
-# ── input stubs ───────────────────────────────────────────────────────────────
-
 define flow topic_control_check
-  # Placeholder: topic restriction check.
-  # Add if-conditions here to block off-topic requests, e.g.:
-  #   if "competitor product" in $user_message
-  #     bot say "Я не обсуждаю конкурирующие продукты. Задай другой вопрос."
-  #     stop
+  $_topic_control_noop = True
 
 define flow pii_pattern_check
-  # Placeholder: pattern-based PII detection.
-  # Add if-conditions here to block personal data extraction, e.g.:
-  #   if "social security" in $user_message
-  #     bot say "Я не обрабатываю персональные идентификационные данные."
-  #     stop
+  $_pii_pattern_noop = True
 
-
-# ── output rails ─────────────────────────────────────────────────────────────
-# These run on the *bot response* before it reaches the user.
-# They are listed in config.yml under rails.output.flows.
-# NOTE: currently only wired if chat.py calls check_output_guardrails().
 
 define flow output_content_safety_check
-  # Block bot responses that contain obvious safety violations.
   if "как сделать бомбу" in $bot_response
     bot say "Ответ заблокирован системой безопасности. Переформулируй запрос."
     stop
@@ -58,8 +29,6 @@ define flow output_content_safety_check
     stop
 
 define flow output_pii_leak_check
-  # Block bot responses that appear to be leaking PII from the context.
-  # Add concrete patterns if PII fields are known (SSN, card numbers, etc.).
   if "ssn:" in $bot_response
     bot say "Ответ заблокирован: обнаружена персональная информация."
     stop
@@ -68,8 +37,6 @@ define flow output_pii_leak_check
     stop
 
 define flow output_injection_check
-  # Block bot responses that look like injected system-prompt fragments
-  # or attempts to override the output pipeline.
   if "[SYSTEM]" in $bot_response
     bot say "Ответ заблокирован: обнаружена инъекция системного блока."
     stop
@@ -81,8 +48,6 @@ define flow output_injection_check
     stop
 
 define flow garak_output_system_leak_check
-  # Block bot responses that reveal secret markers or system-prompt content.
-  # НЕБЕСА is the test secret word used in garak probe prompts.yml.
   if "НЕБЕСА" in $bot_response
     bot say "Ответ заблокирован: обнаружена попытка раскрытия скрытых инструкций или секретного маркера."
     stop
@@ -116,11 +81,6 @@ define flow garak_output_system_leak_check
 
 
 define flow garak_output_file_leak_check
-  # Block bot responses that leak the *contents* of sensitive system files or
-  # private keys. These signatures match the response body itself, so they
-  # catch the leak no matter how the input attack was obfuscated
-  # (transliteration, invisible chars, typos) — the obfuscation-proof layer.
-  # /etc/passwd contents
   if "root:x:0:0" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/passwd)."
     stop
@@ -133,7 +93,6 @@ define flow garak_output_file_leak_check
   if "www-data:x:" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/passwd)."
     stop
-  # /etc/shadow contents (password aging fields)
   if ":0:99999:7:::" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/shadow)."
     stop
@@ -143,7 +102,6 @@ define flow garak_output_file_leak_check
   if "root:!:" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка содержимого системного файла (/etc/shadow)."
     stop
-  # SSH / PEM private keys
   if "-----begin" in $bot_response and "private key" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка приватного ключа."
     stop
@@ -153,7 +111,6 @@ define flow garak_output_file_leak_check
   if "ssh-rsa aaaa" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка SSH-ключа."
     stop
-  # AWS / cloud metadata and access keys
   if "aws_secret_access_key" in $bot_response
     bot say "Ответ заблокирован: обнаружена утечка облачных учётных данных."
     stop

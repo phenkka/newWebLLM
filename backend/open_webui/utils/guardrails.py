@@ -109,9 +109,6 @@ def _literal_present(literal: str, raw: str, norm: str, compact: str) -> bool:
         return pattern.search(raw) is not None or pattern.search(norm) is not None
     if (literal in raw) or (literal in norm):
         return True
-    # Despaced fallback: defeats zero-width chars / removed spaces inserted
-    # between WORDS (e.g. "изготовить<ZWSP>бомбу" → "изготовитьбомбу").
-    # Only for multi-word literals long enough to stay distinctive.
     if " " in literal:
         lit_compact = literal.replace(" ", "")
         if len(lit_compact) >= 8 and lit_compact in compact:
@@ -128,6 +125,92 @@ def _match_rules(rules: List[Rule], text: str) -> Optional[str]:
     for literals, message in rules:
         if all(_literal_present(lit, raw, norm, compact) for lit in literals):
             return message
+    return None
+
+
+_NEMO_RAILS = None
+_NEMO_LOCK = Lock()
+
+_IF_USER_RE = re.compile(r'^(\s*)if\s+(.*\bin\s+\$user_message\b.*)$')
+_IF_BOT_RE = re.compile(r'^(\s*)if\s+(.*\bin\s+\$bot_response\b.*)$')
+
+
+def _normalize_co_for_nemo(text: str) -> str:
+    out: List[str] = []
+    for line in text.splitlines():
+        m = _IF_USER_RE.match(line)
+        if m:
+            out.append(f"{m.group(1)}if $user_message and {m.group(2)}")
+            continue
+        m = _IF_BOT_RE.match(line)
+        if m:
+            cond = m.group(2).replace("$bot_response", "$bot_message")
+            out.append(f"{m.group(1)}if $bot_message and {cond}")
+            continue
+        out.append(line.replace("$bot_response", "$bot_message"))
+    return "\n".join(out)
+
+
+def _build_nemo_rails():
+    try:
+        import yaml
+        from nemoguardrails import LLMRails, RailsConfig
+    except Exception as e:
+        log.info(f"guardrails: NeMo engine unavailable ({e}); keyword layer only")
+        return False
+    logging.getLogger("nemoguardrails").setLevel(logging.WARNING)
+    try:
+        colang = "\n\n".join(
+            _normalize_co_for_nemo(co.read_text(encoding="utf-8"))
+            for co in sorted(_CONFIG_DIR.glob("*.co"))
+        )
+        raw = yaml.safe_load((_CONFIG_DIR / "config.yml").read_text(encoding="utf-8")) or {}
+        raw["models"] = []
+        rails = LLMRails(
+            RailsConfig.from_content(
+                colang_content=colang,
+                yaml_content=yaml.safe_dump(raw, allow_unicode=True),
+            )
+        )
+        flows = raw.get("rails", {})
+        n_in = len(flows.get("input", {}).get("flows", []))
+        n_out = len(flows.get("output", {}).get("flows", []))
+        log.info(f"guardrails: NeMo engine ready ({n_in} input + {n_out} output flows)")
+        return rails
+    except Exception as e:
+        log.error(f"guardrails: failed to build NeMo engine: {e}", exc_info=True)
+        return False
+
+
+def _get_nemo_rails():
+    global _NEMO_RAILS
+    if _NEMO_RAILS is not None:
+        return _NEMO_RAILS
+    with _NEMO_LOCK:
+        if _NEMO_RAILS is None:
+            _NEMO_RAILS = _build_nemo_rails()
+        return _NEMO_RAILS
+
+
+async def _nemo_check(rail: str, messages: list) -> Optional[str]:
+    rails = _get_nemo_rails()
+    if not rails:
+        return None
+    try:
+        result = await rails.generate_async(
+            messages=messages,
+            options={"rails": [rail], "log": {"activated_rails": True}},
+        )
+        for ar in (result.log.activated_rails or []):
+            if ar.type == rail and getattr(ar, "stop", False):
+                resp = result.response
+                if isinstance(resp, list) and resp:
+                    return resp[0].get("content")
+                if isinstance(resp, str):
+                    return resp
+                return None
+    except Exception as e:
+        log.warning(f"guardrails: NeMo {rail} check failed: {e}")
     return None
 
 
@@ -156,11 +239,23 @@ async def check_message_guardrails(messages: list) -> Optional[str]:
     if not user_message:
         return None
     input_rules, _ = _load_rules()
-    return _match_rules(input_rules, user_message)
+    blocked = _match_rules(input_rules, user_message)
+    if blocked:
+        return blocked
+    return await _nemo_check("input", [{"role": "user", "content": user_message.lower()}])
 
 
 async def check_output_guardrails(bot_response: str) -> Optional[str]:
     if not isinstance(bot_response, str) or not bot_response:
         return None
     _, output_rules = _load_rules()
-    return _match_rules(output_rules, bot_response)
+    blocked = _match_rules(output_rules, bot_response)
+    if blocked:
+        return blocked
+    return await _nemo_check(
+        "output",
+        [
+            {"role": "user", "content": "."},
+            {"role": "assistant", "content": bot_response.lower()},
+        ],
+    )
