@@ -147,7 +147,7 @@ firecrawl-py==4.18.0
 
 ## Trace
 opentelemetry-api==1.40.0
-opentelemetry-sdk==1.40.0
+opentelemetry-sdk==1.43.0
 opentelemetry-exporter-otlp==1.40.0
 opentelemetry-instrumentation==0.61b0
 opentelemetry-instrumentation-fastapi==0.61b0
